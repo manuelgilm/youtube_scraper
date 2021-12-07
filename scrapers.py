@@ -21,8 +21,8 @@ class Scraper:
         class_name_like_button = "style-scope.ytd-menu-renderer.force-icon-button.style-text"
 
         #meta content
-        
 
+        
         self.title = info_content.find_element_by_class_name(class_name_info_content)
         self.count_views = info_content.find_element_by_class_name(class_name_count_views)
         self.count_likes = info_content.find_element_by_class_name(class_name_like_button).\

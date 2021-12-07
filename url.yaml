@@ -1,0 +1,35 @@
+url_str:
+  id: primary_inner:
+    id: info:
+      id: info_contents:
+        id: container:
+          class: title style-scope ytd-video-primary-info-renderer
+          id: info:
+            id: info text:
+              id: count:
+                class: view-count style-scope ytd-video-view-count-renderer
+
+              id: info-strings:
+                class: style-scope ytd-video-primary-info-renderer
+            id:menu-container:
+              id: menu:
+                id: top-level-buttons-computed:
+                  id: button:
+                    id: text
+    id:meta:
+      id: meta-contents:
+        id:container:
+          id:top-row:
+            id: upload-info:
+              id: channel-name:
+                id: container:
+                  id: text-container:
+                    id: text
+              id: owner-sub-count
+            
+
+
+
+
+
+      
