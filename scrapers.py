@@ -8,7 +8,9 @@ class Scraper:
         self.option.add_argument("--headless")
 
         self.driver = webdriver.Firefox(options = self.option)
+
         self.driver.get(URL)
+
 
     def get_video_info(self):
 
