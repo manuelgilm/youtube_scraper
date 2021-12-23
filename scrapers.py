@@ -1,5 +1,6 @@
 from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+import selenium.webdriver.support.ui as ui
+import time 
 
 class Scraper:
 
@@ -39,7 +40,8 @@ class Scraper:
 
 
 
-my_scraper = Scraper("https://www.youtube.com/watch?v=Gb_DIa9Y_v8")
+my_scraper = Scraper("https://www.youtube.com/watch?v=9mtlSiKm3kg")
+time.sleep(15)
 my_scraper.get_video_info()
 
 print(my_scraper.title.text)
