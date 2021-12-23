@@ -14,13 +14,13 @@ def main(url):
     time.sleep(15)
     my_scraper.get_video_info()
 
-    print(f"Video Title: {my_scraper.title.text}")
-    print(f"Total Views: {my_scraper.count_views.text}")
-    print(f"Total Likes: {my_scraper.count_likes.text}")
-    print(f"Video Date: {my_scraper.date.text}")
+    print(f"Video Title: {my_scraper.title}")
+    print(f"Total Views: {my_scraper.count_views}")
+    print(f"Total Likes: {my_scraper.count_likes}")
+    print(f"Video Date: {my_scraper.date}")
 
-    print(f"Channel Name: {my_scraper.channel_name.text}")
-    print(f"Subscribers: {my_scraper.channel_subs.text}")
+    print(f"Channel Name: {my_scraper.channel_name}")
+    print(f"Subscribers: {my_scraper.channel_subs}")
 
 if __name__ =="__main__":
     args = parser.parse_args()

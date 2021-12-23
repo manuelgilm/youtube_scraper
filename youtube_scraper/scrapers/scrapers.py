@@ -7,10 +7,11 @@ class Scraper:
     def __init__(self, URL):
         self.option = webdriver.FirefoxOptions()
         self.option.add_argument("--headless")
-
         self.driver = webdriver.Firefox(options = self.option)
-
         self.driver.get(URL)
+        time.sleep(10)
+        self.get_video_info()
+
 
 
     def get_video_info(self):
@@ -23,17 +24,12 @@ class Scraper:
         class_name_count_views = "view-count.style-scope.ytd-video-view-count-renderer"
         class_name_like_button = "style-scope.ytd-menu-renderer.force-icon-button.style-text"
 
-        #meta content
-
-        
-        self.title = info_content.find_element_by_class_name(class_name_info_content)
-        self.count_views = info_content.find_element_by_class_name(class_name_count_views)
+        #meta content       
+        self.title = info_content.find_element_by_class_name(class_name_info_content).text
+        self.count_views = info_content.find_element_by_class_name(class_name_count_views).text
         self.count_likes = info_content.find_element_by_class_name(class_name_like_button).\
-            find_element_by_id("text")
-        self.date = info_content.find_element_by_id("info-strings")
-
-        self.channel_name = meta_content.find_element_by_id("upload-info").find_element_by_id("channel-name")
-        self.channel_subs = meta_content.find_element_by_id("upload-info").find_element_by_id("owner-sub-count")
-
-        self.channel_url = self.channel_name.find_element_by_class_name("yt-simple-endpoint.style-scope.yt-formatted-string")
-        self.video_description = meta_content.find_element_by_id("description")
+            find_element_by_id("text").text
+        self.date = info_content.find_element_by_id("info-strings").text
+        self.channel_name = meta_content.find_element_by_id("upload-info").find_element_by_id("channel-name").text
+        self.channel_subs = meta_content.find_element_by_id("upload-info").find_element_by_id("owner-sub-count").text
+        
