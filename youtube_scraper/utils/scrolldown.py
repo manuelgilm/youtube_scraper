@@ -7,17 +7,18 @@ import pickle
 class ScrollDown:
     def __init__(self, driver):
         self.driver = driver
-        self.pause = 2
+        self.pause = 4
         self.comments = None
 
     def scrolldown(self):
         self.last_height = self.driver.execute_script("return document.documentElement.scrollHeight")
         while True:
-            self.driver.execute_script(f"window.scrollTo(0,{4*self.last_height})")
+            self.driver.execute_script(f"window.scrollTo(0,{8*self.last_height})")
             time.sleep(self.pause)
             new_height = self.driver.execute_script("return document.documentElement.scrollHeight")
             
             if new_height==self.last_height:
+                print("READY")
                 break
 
             self.last_height = new_height

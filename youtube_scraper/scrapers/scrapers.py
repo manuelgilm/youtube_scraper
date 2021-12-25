@@ -12,8 +12,6 @@ class Scraper:
         time.sleep(10)
         self.get_video_info()
 
-
-
     def get_video_info(self):
 
         info_content = self.driver.find_element_by_id("info-contents")
