@@ -12,7 +12,6 @@ URL = "https://www.youtube.com/watch?v=oSulEWeZlPA"
 driver.get(URL)
 
 pause = 2
-
 print("Scrolling down...")
 last_height = driver.execute_script("return document.documentElement.scrollHeight")
 while True:

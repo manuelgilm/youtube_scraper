@@ -1,6 +1,7 @@
 from youtube_scraper import Scraper
 import argparse
 import time
+import pickle
 
 parser = argparse.ArgumentParser(description="")
 parser.add_argument("--url", help= "Video url")
@@ -21,6 +22,9 @@ def main(url):
 
     print(f"Channel Name: {my_scraper.channel_name.text}")
     print(f"Subscribers: {my_scraper.channel_subs.text}")
+
+    my_scraper.parse_comments()
+    
 
 if __name__ =="__main__":
     args = parser.parse_args()
