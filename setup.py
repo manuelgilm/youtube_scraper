@@ -6,6 +6,7 @@ setup(
     description="Useful tools to get information from youtube videos",
     author ="Manuel Gil",
     author_email="manuelgilsitio@gmail.com",
+    install_requires=["selenium"],
     packages=find_packages()
 
 )
