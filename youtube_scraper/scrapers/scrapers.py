@@ -2,13 +2,17 @@ from selenium import webdriver
 import selenium.webdriver.support.ui as ui
 import time 
 
+chrome_driver_path = "youtube_scraper/scrapers/chromedriver"
+
 class Scraper:
 
     def __init__(self, URL):
-        self.option = webdriver.FirefoxOptions()
-        self.option.add_argument("--headless")
+        self.options = webdriver.ChromeOptions()
+        self.options.add_argument("--headless")
+        self.options.add_argument('--ignore-certificate-errors')
 
-        self.driver = webdriver.Firefox(options = self.option)
+        self.driver = webdriver.Chrome(executable_path=chrome_driver_path,
+                                       chrome_options=self.options)
 
         self.driver.get(URL)
 
