@@ -5,20 +5,20 @@ from selenium.webdriver.support import expected_conditions as EC
 import selenium.webdriver.support.ui as ui
 import time 
 import pickle
+from tqdm import tqdm
 
 from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException
 
 chrome_driver_path = "youtube_scraper/scrapers/chromedriver"
+
 class Scraper:
 
     def __init__(self, URL):
         self.options = webdriver.ChromeOptions()
         self.options.add_argument("--headless")
         self.options.add_argument('--ignore-certificate-errors')
-
         self.driver = webdriver.Chrome(executable_path=chrome_driver_path,
                                        chrome_options=self.options)
-
         self.driver.get(URL)
 
 
@@ -45,26 +45,22 @@ class Scraper:
         self.channel_url = self.channel_name.find_element_by_class_name("yt-simple-endpoint.style-scope.yt-formatted-string")
         self.video_description = meta_content.find_element_by_id("description")
 
-    def get_video_comments(self):
-        pause = 5
-        print("Scrolling down...") # change for logger
+    def scroll_down(self, pause=3):
         last_height = self.driver.execute_script("return document.documentElement.scrollHeight")
-
         while True:
             self.driver.execute_script(f"window.scrollTo(0, document.documentElement.scrollHeight)") 
             time.sleep(pause)
-
             new_height = self.driver.execute_script("return document.documentElement.scrollHeight")
             if new_height == last_height:
                 break
-
             last_height = new_height
 
-        comments = self.driver.find_elements_by_tag_name('ytd-comment-thread-renderer')
+    def get_video_comments(self):
+        try:
+            return self.driver.find_elements_by_tag_name('ytd-comment-thread-renderer')
+        except Exception as e:
+            return e
 
-        return comments
-
- 
     def parse_comment(self, comment):
         comment_obj = dict()
 
@@ -91,20 +87,19 @@ class Scraper:
 
         return comment_obj
 
-
-    def parse_comments(self):
-        comments = self.get_video_comments()
+    def parse_comments(self, comments):
         print(f"There are: {len(comments)}")
         comment_data = []
-        print("Parsing comments")
-
-        for comment in comments:
+        for comment in tqdm(comments, desc="Parsing Comments"):
             try:
                 comment_data.append(self.parse_comment(comment))
             except Exception as e:
                 print(e)
 
-        print("Saving comments........")
-        with open("comment_data_2.pkl","wb") as f:
-            pickle.dump(comment_data, f)
+        return comment_data
+
+    def save_comments(self, data, path = "comments.pkl"):
+        with open(path,"wb") as f:
+            pickle.dump(data, f)
+
 
