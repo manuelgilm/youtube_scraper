@@ -1,10 +1,14 @@
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC 
 import selenium.webdriver.support.ui as ui
 import time 
 import pickle
 
-chrome_driver_path = "youtube_scraper/scrapers/chromedriver"
+from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException
 
+chrome_driver_path = "youtube_scraper/scrapers/chromedriver"
 class Scraper:
 
     def __init__(self, URL):
@@ -42,7 +46,7 @@ class Scraper:
         self.video_description = meta_content.find_element_by_id("description")
 
     def get_video_comments(self):
-        pause = 2
+        pause = 5
         print("Scrolling down...") # change for logger
         last_height = self.driver.execute_script("return document.documentElement.scrollHeight")
 
@@ -56,32 +60,51 @@ class Scraper:
 
             last_height = new_height
 
-        comments = self.driver.find_elements_by_id('comment')
+        comments = self.driver.find_elements_by_tag_name('ytd-comment-thread-renderer')
 
         return comments
 
+ 
+    def parse_comment(self, comment):
+        comment_obj = dict()
+
+        comment_obj["comment"] = (comment.find_element_by_id("comment")
+        .find_element_by_id("body")
+        .find_element_by_id("main")
+        .find_element_by_id("expander")
+        .find_element_by_id("content")
+        .find_element_by_id("content-text").get_attribute('innerHTML'))
+
+        comment_obj["author"] = (comment.find_element_by_id("comment")
+        .find_element_by_id("body")
+        .find_element_by_id("main")
+        .find_element_by_id("header")
+        .find_element_by_id("header-author")
+        .find_element_by_id("author-text").text)
+
+        comment_obj["author_url"] = (comment.find_element_by_id("comment")
+        .find_element_by_id("body")
+        .find_element_by_id("main")
+        .find_element_by_id("header")
+        .find_element_by_id("header-author")
+        .find_element_by_id("author-text").get_attribute("href"))
+
+        return comment_obj
+
+
     def parse_comments(self):
         comments = self.get_video_comments()
+        print(f"There are: {len(comments)}")
+        comment_data = []
+        print("Parsing comments")
 
-        comment_data = {
-            "comment":[],
-            "author":[],
-            "author_url":[]
-        }
-
-        print("Saving comments")
         for comment in comments:
-
             try:
-                comment_data["comment"].append(comment.find_element_by_id("body").find_element_by_id("expander").find_element_by_id("content-text").text)
-                comment_data["author"].append(comment.find_element_by_id("body").find_element_by_id("author-text").find_element_by_class_name("style-scope.ytd-comment-renderer").text)
-                comment_data["author_url"].append(comment.find_element_by_id("body").find_element_by_id("author-thumbnail").find_element_by_class_name(
-                        'yt-simple-endpoint.style-scope.ytd-comment-renderer').get_attribute("href"))
-
+                comment_data.append(self.parse_comment(comment))
             except Exception as e:
                 print(e)
-                
 
-        with open("comment_data.pkl","wb") as f:
+        print("Saving comments........")
+        with open("comment_data_2.pkl","wb") as f:
             pickle.dump(comment_data, f)
 
