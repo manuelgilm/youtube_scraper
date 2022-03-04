@@ -8,6 +8,7 @@ import pickle
 from tqdm import tqdm
 
 from selenium.common.exceptions import ElementClickInterceptedException, ElementNotInteractableException
+from selenium.common.exceptions import TimeoutException
 
 chrome_driver_path = "youtube_scraper/scrapers/chromedriver"
 
@@ -20,6 +21,11 @@ class Scraper:
         self.driver = webdriver.Chrome(executable_path=chrome_driver_path,
                                        chrome_options=self.options)
         self.driver.get(URL)
+
+        try:
+            element = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID,"info-contents")))
+        except TimeoutException as e:
+            print(e)
 
 
     def get_video_info(self):
@@ -89,12 +95,14 @@ class Scraper:
 
     def parse_comments(self, comments):
         print(f"There are: {len(comments)}")
-        comment_data = []
-        for comment in tqdm(comments, desc="Parsing Comments"):
-            try:
-                comment_data.append(self.parse_comment(comment))
-            except Exception as e:
-                print(e)
+        comment_data = [
+            self.parse_comment(comment) for comment in tqdm(comments, desc="Parsing comments")
+        ]
+        # for comment in tqdm(comments, desc="Parsing Comments"):
+        #     try:
+        #         comment_data.append(self.parse_comment(comment))
+        #     except Exception as e:
+        #         print(e)
 
         return comment_data
 

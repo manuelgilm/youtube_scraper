@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import argparse
 import time
 import pickle
-
+import ray 
 parser = argparse.ArgumentParser(description="")
 parser.add_argument("--url", help= "Video url")
 
@@ -14,7 +14,6 @@ def main(url):
     
     my_scraper = Scraper(url)
     # Use explicity wait to wait for [id="info-contents"]
-    time.sleep(10)
     my_scraper.get_video_info()
     
     print(f"Video Title: {my_scraper.title.text}")
