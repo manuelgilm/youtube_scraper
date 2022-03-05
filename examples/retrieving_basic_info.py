@@ -41,7 +41,8 @@ def main(url):
         print(comment["comment"])
 
     #saving data 
-    my_scraper.save_comments(text_comments,"test_2.pkl")
+    my_scraper.save_comments(text_comments,"test_3.pkl")
+    my_scraper.close_driver()
     
 
 

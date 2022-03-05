@@ -1,3 +1,4 @@
+from multiprocessing.connection import wait
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -8,7 +9,7 @@ import time
 import pickle
 from tqdm import tqdm
 from typing import List, Dict
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 chrome_driver_path = "youtube_scraper/scrapers/chromedriver"
 
@@ -51,7 +52,6 @@ class Scraper:
         self.video_description = meta_content.find_element(By.ID,"description")
 
     def scroll_down(self, pause:int=2)->None:
-
         last_height = self.driver.execute_script("return document.documentElement.scrollHeight")
         while True:
             self.driver.execute_script(f"window.scrollTo(0, document.documentElement.scrollHeight)") 
@@ -81,7 +81,7 @@ class Scraper:
         try:
             if comment.find_element(By.ID, "creator-heart-button"):
                 comment_obj["author-heart"] = 1
-        except:
+        except NoSuchElementException:
             comment_obj["author-heart"] = 0
 
         return comment_obj
@@ -104,3 +104,6 @@ class Scraper:
     def save_comments(self, data:List[Dict], path:str = "comments.pkl")->None:
         with open(path,"wb") as f:
             pickle.dump(data, f)
+
+    def close_driver(self):
+        self.driver.close()
