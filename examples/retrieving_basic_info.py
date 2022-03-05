@@ -24,16 +24,22 @@ def main(url):
     print(f"Channel Name: {my_scraper.channel_name.text}")
     print(f"Subscribers: {my_scraper.channel_subs.text}")
 
-    my_scraper.scroll_down(3)
+    my_scraper.scroll_down(2)
     comments = my_scraper.get_video_comments()
     parsed_comments = my_scraper.parse_comments(comments)
 
     for comment in parsed_comments:
         
         print(comment["author"])
-        soup = BeautifulSoup(comment["comment"])
-        print(soup.get_text())
-        print("-"*100)
+        try:
+            soup = BeautifulSoup(comment["comment"], features="html.parser")
+            print(soup.get_text())
+            print("-"*100)
+        except Exception as e:
+            print(e)
+
+    #saving data 
+    my_scraper.save_comments(parsed_comments,"test.pkl")
     
 
 

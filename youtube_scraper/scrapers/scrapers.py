@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
+from youtube_scraper.utils import times
 import selenium.webdriver.support.ui as ui
 import time 
 import pickle
@@ -23,7 +24,7 @@ class Scraper:
         self.driver.get(URL)
 
         try:
-            element = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID,"info-contents")))
+            element = WebDriverWait(self.driver, times.SHORT_TIME_10).until(EC.presence_of_element_located((By.ID,"info-contents")))
         except TimeoutException as e:
             print(e)
 
@@ -39,26 +40,28 @@ class Scraper:
         class_name_like_button = "style-scope.ytd-menu-renderer.force-icon-button.style-text"
 
         #meta content       
-        self.title = info_content.find_element_by_class_name(class_name_info_content)
-        self.count_views = info_content.find_element_by_class_name(class_name_count_views)
-        self.count_likes = info_content.find_element_by_class_name(class_name_like_button).\
-            find_element_by_id("text")
-        self.date = info_content.find_element_by_id("info-strings")
+        self.title = info_content.find_element(By.CLASS_NAME, class_name_info_content)
+        self.count_views = info_content.find_element(By.CLASS_NAME,class_name_count_views)
+        self.count_likes = info_content.find_element(By.CLASS_NAME,class_name_like_button).find_element(By.ID,"text")
+        self.date = info_content.find_element(By.ID,"info-strings")
 
-        self.channel_name = meta_content.find_element_by_id("upload-info").find_element_by_id("channel-name")
-        self.channel_subs = meta_content.find_element_by_id("upload-info").find_element_by_id("owner-sub-count")
+        self.channel_name = meta_content.find_element(By.ID,"upload-info").find_element(By.ID,"channel-name")
+        self.channel_subs = meta_content.find_element(By.ID,"upload-info").find_element(By.ID,"owner-sub-count")
 
-        self.channel_url = self.channel_name.find_element_by_class_name("yt-simple-endpoint.style-scope.yt-formatted-string")
-        self.video_description = meta_content.find_element_by_id("description")
+        self.channel_url = self.channel_name.find_element(By.CLASS_NAME,"yt-simple-endpoint.style-scope.yt-formatted-string")
+        self.video_description = meta_content.find_element(By.ID,"description")
 
-    def scroll_down(self, pause=3):
+    def scroll_down(self, pause=2):
+
         last_height = self.driver.execute_script("return document.documentElement.scrollHeight")
         while True:
             self.driver.execute_script(f"window.scrollTo(0, document.documentElement.scrollHeight)") 
             time.sleep(pause)
             new_height = self.driver.execute_script("return document.documentElement.scrollHeight")
+
             if new_height == last_height:
                 break
+
             last_height = new_height
 
     def get_video_comments(self):
@@ -69,41 +72,15 @@ class Scraper:
 
     def parse_comment(self, comment):
         comment_obj = dict()
-
-        comment_obj["comment"] = (comment.find_element_by_id("comment")
-        .find_element_by_id("body")
-        .find_element_by_id("main")
-        .find_element_by_id("expander")
-        .find_element_by_id("content")
-        .find_element_by_id("content-text").get_attribute('innerHTML'))
-
-        comment_obj["author"] = (comment.find_element_by_id("comment")
-        .find_element_by_id("body")
-        .find_element_by_id("main")
-        .find_element_by_id("header")
-        .find_element_by_id("header-author")
-        .find_element_by_id("author-text").text)
-
-        comment_obj["author_url"] = (comment.find_element_by_id("comment")
-        .find_element_by_id("body")
-        .find_element_by_id("main")
-        .find_element_by_id("header")
-        .find_element_by_id("header-author")
-        .find_element_by_id("author-text").get_attribute("href"))
-
+        comment_obj["comment"] = comment.find_element(By.ID, "content-text").get_attribute("innerHTML")
+        comment_obj["author"] = comment.find_element(By.ID, "author-text").text
+        comment_obj["author_url"] = comment.find_element(By.ID, "author-text").get_attribute("href")
         return comment_obj
 
     def parse_comments(self, comments):
-        print(f"There are: {len(comments)}")
         comment_data = [
             self.parse_comment(comment) for comment in tqdm(comments, desc="Parsing comments")
         ]
-        # for comment in tqdm(comments, desc="Parsing Comments"):
-        #     try:
-        #         comment_data.append(self.parse_comment(comment))
-        #     except Exception as e:
-        #         print(e)
-
         return comment_data
 
     def save_comments(self, data, path = "comments.pkl"):
