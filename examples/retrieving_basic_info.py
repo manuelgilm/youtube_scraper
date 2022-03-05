@@ -1,3 +1,4 @@
+from tqdm import tqdm
 from youtube_scraper import Scraper
 from bs4 import BeautifulSoup
 import argparse
@@ -27,19 +28,20 @@ def main(url):
     my_scraper.scroll_down(2)
     comments = my_scraper.get_video_comments()
     parsed_comments = my_scraper.parse_comments(comments)
+    text_comments = my_scraper.get_comment_text(parsed_comments)
 
-    for comment in parsed_comments:
-        
+    for comment in tqdm(text_comments):
+        print("Author: ")
         print(comment["author"])
-        try:
-            soup = BeautifulSoup(comment["comment"], features="html.parser")
-            print(soup.get_text())
-            print("-"*100)
-        except Exception as e:
-            print(e)
+        print("\n")
+        print("Author URL: ")
+        print(comment["author_url"])
+        print("\n")
+        print("Comment: ")
+        print(comment["comment"])
 
     #saving data 
-    my_scraper.save_comments(parsed_comments,"test.pkl")
+    my_scraper.save_comments(text_comments,"test_2.pkl")
     
 
 
