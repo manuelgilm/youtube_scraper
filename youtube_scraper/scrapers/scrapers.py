@@ -72,7 +72,7 @@ class Scraper:
     def parse_comment(self, comment)->Dict:
         comment_obj = dict()
         comment_obj["comment"] = comment.find_element(By.ID, "content-text").get_attribute("innerHTML")
-        comment_obj["author"] = comment.find_element(By.ID, "author-text").text
+        comment_obj["author"] = comment.find_element(By.ID, "author-text").get_attribute("innerHTML")
         comment_obj["author_url"] = comment.find_element(By.ID, "author-text").get_attribute("href")
         comment_obj["published"] = comment.find_element(By.ID, "header-author").find_element(By.CLASS_NAME,
                                      "published-time-text.above-comment.style-scope.ytd-comment-renderer").text
@@ -98,7 +98,9 @@ class Scraper:
         parsed_comments = comments.copy()
         for n,comment in tqdm(enumerate(parsed_comments), desc="Parsing HTML"):
             comment_soup = BeautifulSoup(comment["comment"],features="html.parser")
+            author_soup = BeautifulSoup(comment["author"], features = "html.parser")
             parsed_comments[n]["comment"] = comment_soup.get_text()
+            parsed_comments[n]["author"] = author_soup.get_text()
         return parsed_comments
 
     def save_comments(self, data:List[Dict], path:str = "comments.pkl")->None:

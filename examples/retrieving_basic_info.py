@@ -14,7 +14,6 @@ def main(url):
         url = "https://www.youtube.com/watch?v=9mtlSiKm3kg"
     
     my_scraper = Scraper(url)
-    # Use explicity wait to wait for [id="info-contents"]
     my_scraper.get_video_info()
     
     print(f"Video Title: {my_scraper.title.text}")
@@ -24,6 +23,16 @@ def main(url):
 
     print(f"Channel Name: {my_scraper.channel_name.text}")
     print(f"Subscribers: {my_scraper.channel_subs.text}")
+
+    with open("morning_glory_info.pkl","wb") as f:
+        pickle.dump({
+            "title":my_scraper.title.text,
+            "total_views":my_scraper.count_views.text,
+            "total_likes":my_scraper.count_likes.text,
+            "date":my_scraper.date.text,
+            "channel_name":my_scraper.channel_name.text,
+            "subscribers":my_scraper.channel_subs.text
+        },f)
 
     my_scraper.scroll_down(2)
     comments = my_scraper.get_video_comments()
@@ -41,7 +50,8 @@ def main(url):
         print(comment["comment"])
 
     #saving data 
-    my_scraper.save_comments(text_comments,"test_3.pkl")
+    my_scraper.save_comments(text_comments,"morning_glory_comments.pkl")
+    
     my_scraper.close_driver()
     
 
